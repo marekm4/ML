@@ -1,3 +1,5 @@
+import datetime
+
 import matplotlib.pyplot as plt
 
 from sklearn.datasets import load_iris
@@ -24,6 +26,7 @@ names = [
     "Decision Tree",
     "Random Forest",
     "Neural Net",
+    "Neural Net",
     "AdaBoost",
     "Naive Bayes",
     "QDA",
@@ -39,6 +42,7 @@ classifiers = [
         max_depth=5, n_estimators=10, max_features=1, random_state=42
     ),
     MLPClassifier(alpha=1, max_iter=1000, random_state=42),
+    MLPClassifier(alpha=1, max_iter=1000, random_state=42, hidden_layer_sizes=(10,)),
     AdaBoostClassifier(algorithm="SAMME", random_state=42),
     GaussianNB(),
     QuadraticDiscriminantAnalysis(),
@@ -84,7 +88,9 @@ for ds_cnt, ds in enumerate(datasets):
         ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
 
         clf = make_pipeline(StandardScaler(), clf)
+        start = datetime.datetime.now()
         clf.fit(X_train, y_train)
+        time = datetime.datetime.now() - start
         score = clf.score(X_test, y_test)
         DecisionBoundaryDisplay.from_estimator(
             clf, X, alpha=0.8, ax=ax, eps=0.5
@@ -111,8 +117,15 @@ for ds_cnt, ds in enumerate(datasets):
             ax.set_title(name)
         ax.text(
             x_max - 0.3,
-            y_min + 0.3,
+            y_min + 0.4,
             ("%.2f" % score).lstrip("0"),
+            size=15,
+            horizontalalignment="right",
+        )
+        ax.text(
+            x_max - 0.3,
+            y_min + 0.1,
+            ("%.3f" % time.total_seconds()).lstrip("0"),
             size=15,
             horizontalalignment="right",
         )
