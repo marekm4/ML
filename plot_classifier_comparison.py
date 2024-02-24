@@ -70,6 +70,7 @@ datasets = [
     (PCA(n_components=2).fit_transform(iris.data), iris.target),
 ]
 
+scores = np.zeros((len(classifiers),))
 figure = plt.figure(figsize=(3 * (len(classifiers) - 1), 3 * len(datasets)))
 i = 1
 # iterate over datasets
@@ -100,14 +101,13 @@ for ds_cnt, ds in enumerate(datasets):
     i += 1
 
     # iterate over classifiers
-    for name, clf in zip(names, classifiers):
+    for cl_cnt, (name, clf) in enumerate(zip(names, classifiers)):
         ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
 
         clf = make_pipeline(StandardScaler(), clf)
-        start = datetime.datetime.now()
         clf.fit(X_train, y_train)
-        time = datetime.datetime.now() - start
         score = accuracy_score(y_test, clf.predict(X_test))
+        scores[cl_cnt] += score
         feature_1, feature_2 = np.meshgrid(np.linspace(x_min, x_max), np.linspace(y_min, y_max))
         grid = np.vstack([feature_1.ravel(), feature_2.ravel()]).T
         y_pred = np.reshape(clf.predict(grid), feature_1.shape)
@@ -134,18 +134,19 @@ for ds_cnt, ds in enumerate(datasets):
             ax.set_title(name)
         ax.text(
             x_max - 0.3,
-            y_min + 0.4,
+            y_min + 0.2,
             ("%.2f" % score).lstrip("0"),
             size=15,
             horizontalalignment="right",
         )
-        ax.text(
-            x_max - 0.3,
-            y_min + 0.1,
-            ("%.3f" % time.total_seconds()).lstrip("0"),
-            size=15,
-            horizontalalignment="right",
-        )
+        if ds_cnt == len(datasets) - 1:
+            ax.text(
+                x_max - 0.3,
+                y_min - 0.4,
+                ("%.2f" % (scores[cl_cnt] / len(datasets))).lstrip("0"),
+                size=15,
+                horizontalalignment="right",
+            )
         i += 1
 
 plt.tight_layout()
