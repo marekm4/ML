@@ -1,6 +1,7 @@
 import datetime
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from sklearn.datasets import load_iris
 from sklearn.decomposition import PCA
@@ -94,9 +95,10 @@ for ds_cnt, ds in enumerate(datasets):
         clf.fit(X_train, y_train)
         time = datetime.datetime.now() - start
         score = accuracy_score(y_test, clf.predict(X_test))
-        DecisionBoundaryDisplay.from_estimator(
-            clf, X, alpha=0.8, ax=ax, eps=0.5
-        )
+        feature_1, feature_2 = np.meshgrid(np.linspace(x_min, x_max), np.linspace(y_min, y_max))
+        grid = np.vstack([feature_1.ravel(), feature_2.ravel()]).T
+        y_pred = np.reshape(clf.predict(grid), feature_1.shape)
+        DecisionBoundaryDisplay(xx0=feature_1, xx1=feature_2, response=y_pred).plot(ax=ax)
 
         # Plot the training points
         ax.scatter(
