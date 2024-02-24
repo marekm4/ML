@@ -9,6 +9,7 @@ from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.inspection import DecisionBoundaryDisplay
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
@@ -26,7 +27,7 @@ names = [
     "Decision Tree",
     "Random Forest",
     "Neural Net",
-    "Neural Net",
+    "LogisticRegression",
     "AdaBoost",
     "Naive Bayes",
     "QDA",
@@ -42,7 +43,7 @@ classifiers = [
         max_depth=5, n_estimators=10, max_features=1, random_state=42
     ),
     MLPClassifier(alpha=1, max_iter=1000, random_state=42),
-    MLPClassifier(alpha=1, max_iter=1000, random_state=42, hidden_layer_sizes=(10,)),
+    LogisticRegression(random_state=42),
     AdaBoostClassifier(algorithm="SAMME", random_state=42),
     GaussianNB(),
     QuadraticDiscriminantAnalysis(),
