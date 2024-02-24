@@ -16,12 +16,13 @@ class Network(torch.nn.Module):
 
 class Classifier:
     def __init__(self, epochs=1000, batch_size=10, random_state=42):
-        torch.manual_seed(random_state)
         self.model = None
         self.epochs = epochs
         self.batch_size = batch_size
+        self.random_state = random_state
 
     def fit(self, X, y):
+        torch.manual_seed(self.random_state)
         self.model = Network(input_size=X.shape[1], output_size=np.max(y) + 1)
         dataset = torch.utils.data.TensorDataset(torch.tensor(X, dtype=torch.float), torch.tensor(torch.nn.functional.one_hot(torch.tensor(y, dtype=torch.long)), dtype=torch.float))
         dataloader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, shuffle=True)

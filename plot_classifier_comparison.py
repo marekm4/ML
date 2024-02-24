@@ -3,7 +3,7 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_iris, make_circles, make_classification, make_moons
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
@@ -55,9 +55,18 @@ classifiers = [
     QuadraticDiscriminantAnalysis(),
 ]
 
+X, y = make_classification(
+    n_features=2, n_redundant=0, n_informative=2, random_state=1, n_clusters_per_class=1
+)
+rng = np.random.RandomState(2)
+X += 2 * rng.uniform(size=X.shape)
+linearly_separable = (X, y)
 iris = load_iris()
 
 datasets = [
+    make_moons(noise=0.3, random_state=0),
+    make_circles(noise=0.2, factor=0.5, random_state=1),
+    linearly_separable,
     (PCA(n_components=2).fit_transform(iris.data), iris.target),
 ]
 
