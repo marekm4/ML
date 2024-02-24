@@ -21,8 +21,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
-from classifier import Classifier
-
 names = [
     "Nearest Neighbors",
     "Linear SVM",
@@ -49,7 +47,7 @@ classifiers = [
     ),
     MLPClassifier(alpha=1, max_iter=1000, random_state=42),
     LogisticRegression(random_state=42),
-    Classifier(random_state=42),
+    MLPClassifier(alpha=0.0025, batch_size=10, max_iter=2500, hidden_layer_sizes=(10,), random_state=42),
     AdaBoostClassifier(algorithm="SAMME", random_state=42),
     GaussianNB(),
     QuadraticDiscriminantAnalysis(),
