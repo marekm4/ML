@@ -1,34 +1,7 @@
-"""
-=====================
-Classifier comparison
-=====================
-
-A comparison of several classifiers in scikit-learn on synthetic datasets.
-The point of this example is to illustrate the nature of decision boundaries
-of different classifiers.
-This should be taken with a grain of salt, as the intuition conveyed by
-these examples does not necessarily carry over to real datasets.
-
-Particularly in high-dimensional spaces, data can more easily be separated
-linearly and the simplicity of classifiers such as naive Bayes and linear SVMs
-might lead to better generalization than is achieved by other classifiers.
-
-The plots show training points in solid colors and testing points
-semi-transparent. The lower right shows the classification accuracy on the test
-set.
-
-"""
-
-# Code source: Gaël Varoquaux
-#              Andreas Müller
-# Modified for documentation by Jaques Grobler
-# License: BSD 3 clause
-
 import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.colors import ListedColormap
 
-from sklearn.datasets import make_circles, make_classification, make_moons
+from sklearn.datasets import load_iris
+from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.gaussian_process import GaussianProcessClassifier
@@ -71,20 +44,13 @@ classifiers = [
     QuadraticDiscriminantAnalysis(),
 ]
 
-X, y = make_classification(
-    n_features=2, n_redundant=0, n_informative=2, random_state=1, n_clusters_per_class=1
-)
-rng = np.random.RandomState(2)
-X += 2 * rng.uniform(size=X.shape)
-linearly_separable = (X, y)
+iris = load_iris()
 
 datasets = [
-    make_moons(noise=0.3, random_state=0),
-    make_circles(noise=0.2, factor=0.5, random_state=1),
-    linearly_separable,
+    (PCA(n_components=2).fit_transform(iris.data), iris.target),
 ]
 
-figure = plt.figure(figsize=(27, 9))
+figure = plt.figure(figsize=(3 * (len(classifiers) - 1), 3 * len(datasets)))
 i = 1
 # iterate over datasets
 for ds_cnt, ds in enumerate(datasets):
@@ -98,16 +64,14 @@ for ds_cnt, ds in enumerate(datasets):
     y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
 
     # just plot the dataset first
-    cm = plt.cm.RdBu
-    cm_bright = ListedColormap(["#FF0000", "#0000FF"])
     ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
     if ds_cnt == 0:
         ax.set_title("Input data")
     # Plot the training points
-    ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright, edgecolors="k")
+    ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, edgecolors="k")
     # Plot the testing points
     ax.scatter(
-        X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright, alpha=0.6, edgecolors="k"
+        X_test[:, 0], X_test[:, 1], c=y_test, alpha=0.6, edgecolors="k"
     )
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
@@ -123,19 +87,18 @@ for ds_cnt, ds in enumerate(datasets):
         clf.fit(X_train, y_train)
         score = clf.score(X_test, y_test)
         DecisionBoundaryDisplay.from_estimator(
-            clf, X, cmap=cm, alpha=0.8, ax=ax, eps=0.5
+            clf, X, alpha=0.8, ax=ax, eps=0.5
         )
 
         # Plot the training points
         ax.scatter(
-            X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright, edgecolors="k"
+            X_train[:, 0], X_train[:, 1], c=y_train, edgecolors="k"
         )
         # Plot the testing points
         ax.scatter(
             X_test[:, 0],
             X_test[:, 1],
             c=y_test,
-            cmap=cm_bright,
             edgecolors="k",
             alpha=0.6,
         )
