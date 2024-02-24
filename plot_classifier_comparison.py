@@ -10,6 +10,7 @@ from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
@@ -92,7 +93,7 @@ for ds_cnt, ds in enumerate(datasets):
         start = datetime.datetime.now()
         clf.fit(X_train, y_train)
         time = datetime.datetime.now() - start
-        score = clf.score(X_test, y_test)
+        score = accuracy_score(y_test, clf.predict(X_test))
         DecisionBoundaryDisplay.from_estimator(
             clf, X, alpha=0.8, ax=ax, eps=0.5
         )
