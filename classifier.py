@@ -1,12 +1,34 @@
-from sklearn.linear_model import LogisticRegression
+import torch
+
+
+class Network(torch.nn.Module):
+    def __init__(self, input_size, output_size):
+        super().__init__()
+        self.network = torch.nn.Sequential(
+            torch.nn.Linear(input_size, output_size),
+            torch.nn.ReLU(),
+        )
+
+    def forward(self, x):
+        return self.network(x)
 
 
 class Classifier:
     def __init__(self):
-        self.classifier = LogisticRegression()
+        self.model = Network(2, 3)
 
     def fit(self, X, y):
-        return self.classifier.fit(X, y)
+        dataset = torch.utils.data.TensorDataset(torch.tensor(X, dtype=torch.float), torch.tensor(torch.nn.functional.one_hot(torch.tensor(y, dtype=torch.long)), dtype=torch.float))
+        dataloader = torch.utils.data.DataLoader(dataset, batch_size=10, shuffle=True)
+        optimizer = torch.optim.Adam(self.model.parameters())
+        for epoch in range(900):
+            for X, y in dataloader:
+                pred = self.model(X)
+                loss = torch.nn.MSELoss()(pred, y)
+                loss.backward()
+                optimizer.step()
+                optimizer.zero_grad()
 
     def predict(self, X):
-        return self.classifier.predict(X)
+        with torch.no_grad():
+            return self.model(torch.tensor(X, dtype=torch.float)).argmax(dim=1).numpy()
