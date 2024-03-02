@@ -1,5 +1,3 @@
-import datetime
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -20,6 +18,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+
+from classifier import Classifier
 
 names = [
     "Nearest Neighbors",
@@ -47,7 +47,7 @@ classifiers = [
     ),
     MLPClassifier(alpha=1, max_iter=1000, random_state=42),
     LogisticRegression(random_state=42),
-    MLPClassifier(alpha=0.0025, batch_size=10, max_iter=2500, hidden_layer_sizes=(10,), random_state=42),
+    Classifier(20, 0.9),
     AdaBoostClassifier(algorithm="SAMME", random_state=42),
     GaussianNB(),
     QuadraticDiscriminantAnalysis(),
@@ -76,7 +76,7 @@ for ds_cnt, ds in enumerate(datasets):
     # preprocess dataset, split into training and test part
     X, y = ds
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.4, random_state=42
+        X, y, test_size=0.2, random_state=42
     )
 
     x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
@@ -89,9 +89,7 @@ for ds_cnt, ds in enumerate(datasets):
     # Plot the training points
     ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, edgecolors="k")
     # Plot the testing points
-    ax.scatter(
-        X_test[:, 0], X_test[:, 1], c=y_test, alpha=0.6, edgecolors="k"
-    )
+    ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, alpha=0.6, edgecolors="k")
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
     ax.set_xticks(())
@@ -106,15 +104,17 @@ for ds_cnt, ds in enumerate(datasets):
         clf.fit(X_train, y_train)
         score = accuracy_score(y_test, clf.predict(X_test))
         scores[cl_cnt] += score
-        feature_1, feature_2 = np.meshgrid(np.linspace(x_min, x_max), np.linspace(y_min, y_max))
+        feature_1, feature_2 = np.meshgrid(
+            np.linspace(x_min, x_max), np.linspace(y_min, y_max)
+        )
         grid = np.vstack([feature_1.ravel(), feature_2.ravel()]).T
         y_pred = np.reshape(clf.predict(grid), feature_1.shape)
-        DecisionBoundaryDisplay(xx0=feature_1, xx1=feature_2, response=y_pred).plot(ax=ax)
+        DecisionBoundaryDisplay(xx0=feature_1, xx1=feature_2, response=y_pred).plot(
+            ax=ax
+        )
 
         # Plot the training points
-        ax.scatter(
-            X_train[:, 0], X_train[:, 1], c=y_train, edgecolors="k"
-        )
+        ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, edgecolors="k")
         # Plot the testing points
         ax.scatter(
             X_test[:, 0],
